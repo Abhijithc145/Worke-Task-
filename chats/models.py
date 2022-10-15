@@ -34,7 +34,7 @@ class Bot(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE,null=True)
 
     def __str__(self):
-        return self.id
+        return self.name
     
 
 
@@ -49,7 +49,7 @@ class Department(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Agent(models.Model):
@@ -63,7 +63,7 @@ class Agent(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Channel(models.Model):
@@ -77,7 +77,7 @@ class Channel(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Conversations(models.Model):
@@ -95,7 +95,7 @@ class Conversations(models.Model):
     status = models.CharField(max_length = 100,null = False)
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 
@@ -118,7 +118,7 @@ class Message(models.Model):
     autortype = models.CharField(max_length=10,choices = Roles,default = 'user')
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class UserProfile(models.Model):
@@ -136,4 +136,4 @@ class UserProfile(models.Model):
     
 
     def __str__(self):
-        return self.id
+        return str(self.id)

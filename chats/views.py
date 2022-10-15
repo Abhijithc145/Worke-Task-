@@ -97,7 +97,7 @@ class DepartmentList(APIView):
 class DepartmentDetails(APIView):
     def get(self,request,pk,org,bot):
         try:
-            datas = Department.objects.get(id=pk,is_active = True)
+            datas = Department.objects.get(id=pk,is_active = True,organization=org,bot=bot)
             serilizer = DepartmentSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
         except Exception as err:
@@ -106,7 +106,7 @@ class DepartmentDetails(APIView):
 
     def put(self,request,pk,org,bot):
         try:
-            datas = Department.objects.get(id=pk,is_active = True)
+            datas = Department.objects.get(id=pk,is_active = True,organization=org,bot=bot)
             serializer = DepartmentSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -120,7 +120,7 @@ class DepartmentDetails(APIView):
 
     def delete(self,request,pk,org,bot):
         try:
-            data = get_object_or_404(Department, id = pk)
+            data = get_object_or_404(Department, id = pk,organization=org,bot=bot)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -154,18 +154,18 @@ class AgentList(APIView):
 
 
 class AgentDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,dep):
         try:
-            datas = Agent.objects.get(id=pk,is_active = True)
+            datas = Agent.objects.get(id=pk,is_active = True,department=dep)
             serilizer = AgentSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
         except Exception as err:
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,dep):
         try:
-            datas = Agent.objects.get(id=pk,is_active = True)
+            datas = Agent.objects.get(id=pk,is_active = True,department=dep)
             serializer = AgentSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -177,9 +177,9 @@ class AgentDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,dep):
         try:
-            data = get_object_or_404(Agent, id = pk)
+            data = get_object_or_404(Agent, id = pk,department=dep)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -214,17 +214,20 @@ class BotList(APIView):
 class BotDetails(APIView):   
     def get(self,request,pk,org):
         try:
-            print(org)
             datas = Bot.objects.get(id=pk,is_active = True)
-            serilizer = BotSerializer(datas)
-            return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
+            serilizer = BotSerializer(datas).data
+            if serilizer["organization"] == org:
+                return Response({ "data": serilizer}, status=status.HTTP_200_OK)
+            else:
+                return Response({ "Error": "The organization uuid not exits in this primary key"}, status=status.HTTP_204_NO_CONTENT)
+
         except Exception as err:
             print(err)
             return Response({"Error":"Error"})  
 
     def put(self,request,pk,org):
         try:
-            datas = Bot.objects.get(id=pk,is_active = True)
+            datas = Bot.objects.get(id=pk,is_active = True,organization=org)
             serializer = BotSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -238,7 +241,7 @@ class BotDetails(APIView):
 
     def delete(self,request,pk,org):
         try:
-            data = get_object_or_404(Bot, id = pk)
+            data = get_object_or_404(Bot, id = pk,organization=org)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -269,18 +272,18 @@ class ConversationList(APIView):
 
 
 class ConversationDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,bot):
         try:
-            datas = Conversations.objects.get(id=pk,is_active = True)
+            datas = Conversations.objects.get(id=pk,is_active = True,bot=bot)
             serilizer = ConversationSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
         except Exception as err:
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,bot):
         try:
-            datas = Conversations.objects.get(id=pk,is_active = True)
+            datas = Conversations.objects.get(id=pk,is_active = True,bot=bot)
             serializer = ConversationSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -292,9 +295,9 @@ class ConversationDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,bot):
         try:
-            data = get_object_or_404(Conversations, id = pk)
+            data = get_object_or_404(Conversations, id = pk,bot=bot)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -326,18 +329,18 @@ class MessageList(APIView):
 
 
 class MessageDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,conv):
         try:
-            datas = Message.objects.get(id=pk,is_active = True)
+            datas = Message.objects.get(id=pk,is_active = True,conversation=conv)
             serilizer = MessageSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
         except Exception as err:
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,conv):
         try:
-            datas = Message.objects.get(id=pk,is_active = True)
+            datas = Message.objects.get(id=pk,is_active = True,conversation=conv)
             serializer = MessageSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -349,9 +352,9 @@ class MessageDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,conv):
         try:
-            data = get_object_or_404(Message, id = pk)
+            data = get_object_or_404(Message, id = pk,conversation=conv)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -385,18 +388,18 @@ class UserProfileList(APIView):
 
 
 class UserProfileDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,bot):
         try:
-            datas = UserProfile.objects.get(id=pk,is_active = True)
+            datas = UserProfile.objects.get(id=pk,is_active = True,bot=bot)
             serilizer = UserprofileSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
         except Exception as err:
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,bot):
         try:
-            datas = UserProfile.objects.get(id=pk,is_active = True)
+            datas = UserProfile.objects.get(id=pk,is_active = True,bot=bot)
             serializer = UserprofileSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -408,9 +411,9 @@ class UserProfileDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,bot):
         try:
-            data = get_object_or_404(UserProfile, id = pk)
+            data = get_object_or_404(UserProfile, id = pk,bot=bot)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -446,18 +449,18 @@ class ChannelList(APIView):
 #             
 
 class ChannelDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,bot):
         try:
-            datas = Channel.objects.get(id=pk,is_active = True)
+            datas = Channel.objects.get(id=pk,is_active = True,bot=bot)
             serilizer = ChannelSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
         except Exception as err:
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,bot):
         try:
-            datas = Channel.objects.get(id=pk,is_active = True)
+            datas = Channel.objects.get(id=pk,is_active = True,bot=bot)
             serializer = ChannelSerializer(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -469,9 +472,9 @@ class ChannelDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,bot):
         try:
-            data = get_object_or_404(Channel, id = pk)
+            data = get_object_or_404(Channel, id = pk,bot=bot)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
             data.save()
@@ -479,4 +482,4 @@ class ChannelDetails(APIView):
         except Exception as err:
             print(err)  
 
-            
+                
