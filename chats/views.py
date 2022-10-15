@@ -95,7 +95,7 @@ class DepartmentList(APIView):
 
 
 class DepartmentDetails(APIView):
-    def get(self,request,pk):
+    def get(self,request,pk,org,bot):
         try:
             datas = Department.objects.get(id=pk,is_active = True)
             serilizer = DepartmentSerializer(datas)
@@ -104,7 +104,7 @@ class DepartmentDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org,bot):
         try:
             datas = Department.objects.get(id=pk,is_active = True)
             serializer = DepartmentSerializer(datas, data=request.data, partial=True)
@@ -118,7 +118,7 @@ class DepartmentDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,org,bot):
         try:
             data = get_object_or_404(Department, id = pk)
             data.is_active = not(data.is_active)
@@ -191,6 +191,7 @@ class AgentDetails(APIView):
 
 class BotList(APIView):
     def get(self,request):
+    
         datas = Bot.objects.filter(is_active = True)
         serializer =BotSerializer(datas,many=True)
         return Response(serializer.data)  
@@ -211,8 +212,9 @@ class BotList(APIView):
 
 
 class BotDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,org):
         try:
+            print(org)
             datas = Bot.objects.get(id=pk,is_active = True)
             serilizer = BotSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
@@ -220,7 +222,7 @@ class BotDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org):
         try:
             datas = Bot.objects.get(id=pk,is_active = True)
             serializer = BotSerializer(datas, data=request.data, partial=True)
@@ -234,7 +236,7 @@ class BotDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,org):
         try:
             data = get_object_or_404(Bot, id = pk)
             data.is_active = not(data.is_active)

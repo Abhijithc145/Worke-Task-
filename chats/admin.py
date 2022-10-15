@@ -7,3 +7,4 @@ admin.site.register(Department)
 admin.site.register(Bot)
 admin.site.register(Agent)
 admin.site.register(Conversations)
+
