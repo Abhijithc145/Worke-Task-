@@ -9,7 +9,8 @@ urlpatterns = [
     path("organizations/",OrganizationsList.as_view(),name="chat_organizations"),
     path("organizations/<uuid:pk>",organizationDetails.as_view(),name="chat_organizationslist"),
 
-    path("organization/bots/",BotList.as_view(),name="bots"),
+    path("organization/<uuid:org>/bots/",BotList.as_view(),name="bots"),
+    # path("organization/bots/",BotList.as_view(),name="bots"),
     path("organization/bots/<uuid:pk>",BotDetails.as_view(),name="bots_data"),
 
     path("organization/departments/",DepartmentList.as_view(),name="department_data"),
@@ -29,7 +30,7 @@ urlpatterns = [
 
     path("organization/bots/channels/",ChannelList.as_view(),name="channel_data"),
     path("organization/bots/channels/<uuid:pk>",ChannelDetails.as_view(),name="userprofile_data"),
-    
+
 ]
 
 

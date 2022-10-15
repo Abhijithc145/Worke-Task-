@@ -190,13 +190,13 @@ class AgentDetails(APIView):
 
 
 class BotList(APIView):
-    def get(self,request):
+    def get(self,request,org):
     
-        datas = Bot.objects.filter(is_active = True)
+        datas = Bot.objects.filter(is_active = True,organization=org)
         serializer =BotSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
+    def post(self,request,org):
         try:
      
             serializer = BotSerializer(data=request.data)
