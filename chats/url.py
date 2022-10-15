@@ -9,27 +9,26 @@ urlpatterns = [
     path("organizations/",OrganizationsList.as_view(),name="chat_organizations"),
     path("organizations/<uuid:pk>",organizationDetails.as_view(),name="chat_organizationslist"),
 
-    path("bots/",BotList.as_view(),name="bots"),
-    path("bots/<uuid:pk>/organization/<uuid:org>",BotDetails.as_view(),name="bots_data"),
+    path("organization/bots/",BotList.as_view(),name="bots"),
+    path("organization/bots/<uuid:pk>",BotDetails.as_view(),name="bots_data"),
 
-    path("departments/",DepartmentList.as_view(),name="department_data"),
-    path("departments/<uuid:pk>/organization/<uuid:org>/bot/<uuid:bot>",DepartmentDetails.as_view(),name="department_data"),
+    path("organization/departments/",DepartmentList.as_view(),name="department_data"),
+    path("organization/departments/<uuid:pk>",DepartmentDetails.as_view(),name="department_data"),
 
-    path("agents/",AgentList.as_view(),name="agents"),
-    path("agents/<uuid:pk>/department/<uuid:dep>",AgentDetails.as_view(),name="agents_data"),
+    path("organization/departments/agents/",AgentList.as_view(),name="agents"),
+    path("organization/departments/agents/<uuid:dep>",AgentDetails.as_view(),name="agents_data"),
 
-    path("conversations/",ConversationList.as_view(),name="bots"),
-    path("conversations/<uuid:pk>/bot/<uuid:bot>",ConversationDetails.as_view(),name="bots_data"),
+    path("organization/bots/conversations/",ConversationList.as_view(),name="bots"),
+    path("organization/bots/conversations/<uuid:pk>",ConversationDetails.as_view(),name="bots_data"),
 
-    path("message/",MessageList.as_view(),name="message_data"),
+    path("organization/bots/conversations/message/",MessageList.as_view(),name="message_data"),
     path("message/<uuid:pk>/conversation/<uuid:conv>",MessageDetails.as_view(),name="bots_data"),
 
-    path("userprofiles/",UserProfileList.as_view(),name="userprofile_data"),
-    path("userprofiles/<uuid:pk>/bot/<uuid:bot>",UserProfileDetails.as_view(),name="userprofile_data"),
+    path("organization/bots/userprofiles/",UserProfileList.as_view(),name="userprofile_data"),
+    path("organization/bots/userprofiles/<uuid:pk>",UserProfileDetails.as_view(),name="userprofile_data"),
 
-    path("channels/",ChannelList.as_view(),name="channel_data"),
-    path("channels/<uuid:pk>/bot/<uuid:bot>",ChannelDetails.as_view(),name="userprofile_data"),
-
+    path("organization/bots/channels/",ChannelList.as_view(),name="channel_data"),
+    path("organization/bots/channels/<uuid:pk>",ChannelDetails.as_view(),name="userprofile_data"),
     
 ]
 
