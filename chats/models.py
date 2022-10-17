@@ -95,7 +95,7 @@ class Conversations(models.Model):
     Channel = models.CharField(max_length = 100,null = False)
     sender_id = models.PositiveIntegerField(null=True, blank=True)
     sender_name = models.CharField(max_length = 100,null = True)
-    agent = models.ForeignKey(Agent, on_delete=models.CASCADE)
+    agent = models.CharField(max_length = 100,null = False)
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
     status = models.CharField(max_length = 100,null = False)
 
@@ -123,6 +123,7 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversations, on_delete=models.CASCADE)
     autortype = models.CharField(max_length=10,choices = Roles,default = 'user')
     autor = models.CharField(max_length = 100,null = False)
+    attachment = models.CharField(max_length = 200,null = False)
 
     created_at = models.DateTimeField("Created at", auto_now_add=True)
     created_by = models.CharField(max_length = 100,null = True)
