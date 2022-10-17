@@ -73,17 +73,17 @@ class BotList(APIView):
             post_Data = dict(request.data)
             print(post_Data)
             data3 = {
-                    'organization':str(org),
                     'name': post_Data['name'],
+                    'organization':str(org)
                   }
             print(data3)
-            serializer = BotSerializerValidation(data=data3)
-            print(serializers.data)
+            serializer = BotSerializerValidation(data3)
+            print(serializers)
             
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
-                return Response(serializer.data)
+                return Response(serializer)
             else:
                 return Response(serializer.errors)    
         except Exception as err:
