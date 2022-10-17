@@ -9,27 +9,27 @@ urlpatterns = [
     path("organizations/",OrganizationsList.as_view(),name="chat_organizations"),
     path("organizations/<uuid:pk>",organizationDetails.as_view(),name="chat_organizationslist"),
 
-    path("organization/<uuid:org>/bots/",BotList.as_view(),name="bots"),
+    path("organizations/<uuid:org>/bots/",BotList.as_view(),name="bots"),
     # path("organization/bots/",BotList.as_view(),name="bots"),
-    path("organization/bots/<uuid:pk>",BotDetails.as_view(),name="bots_data"),
+    path("organizations/<uuid:org>/bots/<uuid:pk>",BotDetails.as_view(),name="bots_data"),
 
-    path("organization/departments/",DepartmentList.as_view(),name="department_data"),
-    path("organization/departments/<uuid:pk>",DepartmentDetails.as_view(),name="department_data"),
+    path("organizations/<uuid:org>/departments/",DepartmentList.as_view(),name="department_data"),
+    path("organizations/<uuid:org>/departments/<uuid:pk>",DepartmentDetails.as_view(),name="department_data"),
 
-    path("organization/departments/agents/",AgentList.as_view(),name="agents"),
-    path("organization/departments/agents/<uuid:dep>",AgentDetails.as_view(),name="agents_data"),
+    path("organizations/<uuid:org>/departments/<uuid:dep>/agents/",AgentList.as_view(),name="agents"),
+    path("organizations/<uuid:org>/departments/<uuid:dep>/agents/<uuid:pk>",AgentDetails.as_view(),name="agents_data"),
 
-    path("organization/bots/conversations/",ConversationList.as_view(),name="bots"),
-    path("organization/bots/conversations/<uuid:pk>",ConversationDetails.as_view(),name="bots_data"),
+    path("bots/<uuid:bot>/conversations/",ConversationList.as_view(),name="bots"),
+    path("bots/<uuid:bot>/conversations/<uuid:pk>",ConversationDetails.as_view(),name="bots_data"),
 
-    path("organization/bots/conversations/message/",MessageList.as_view(),name="message_data"),
-    path("message/<uuid:pk>/conversation/<uuid:conv>",MessageDetails.as_view(),name="bots_data"),
+    path("organizations/<uuid:org>/conversations/<uuid:conv>/messages/",MessageList.as_view(),name="message_data"),
+    path("organizations/<uuid:org>/conversations/<uuid:conv>/messages/<uuid:pk>",MessageDetails.as_view(),name="bots_data"),
 
-    path("organization/bots/userprofiles/",UserProfileList.as_view(),name="userprofile_data"),
-    path("organization/bots/userprofiles/<uuid:pk>",UserProfileDetails.as_view(),name="userprofile_data"),
+    path("organizations/<uuid:org>/bots/<uuid:bot>/userprofiles/",UserProfileList.as_view(),name="userprofile_data"),
+    path("organizations/<uuid:org>/bots/<uuid:bot>/userprofiles/<uuid:pk>",UserProfileDetails.as_view(),name="userprofile_data"),
 
-    path("organization/bots/channels/",ChannelList.as_view(),name="channel_data"),
-    path("organization/bots/channels/<uuid:pk>",ChannelDetails.as_view(),name="userprofile_data"),
+    path("organizations/<uuid:org>/bots/<uuid:bot>/channels/",ChannelList.as_view(),name="channel_data"),
+    path("organizations/<uuid:org>/bots/<uuid:bot>/channels/<uuid:pk>",ChannelDetails.as_view(),name="userprofile_data"),
 
 ]
 

@@ -6,9 +6,9 @@ from drf_yasg.utils import swagger_auto_schema
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="New Project API",
+        title="Contact center API",
         default_version="v1",
-        description="New Project API Documentation ",
+        description="Contact center API Documentation ",
         # terms_of_service="https://www.eazyrooms.com/policies/terms/",
         # contact=openapi.Contact(email="eazyrooms@snippets.local"),
         license=openapi.License(name="BSD License"),

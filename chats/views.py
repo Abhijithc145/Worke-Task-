@@ -1,4 +1,5 @@
 from telnetlib import STATUS
+from xml.dom import ValidationErr
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -67,21 +68,17 @@ class organizationDetails(APIView):
 #       Department CRUD
 
 class DepartmentList(APIView):
-    def get(self,request):
+    def get(self,request,org):
+        print(org)
         datas = Department.objects.filter(is_active = True)
         serializer =DepartmentSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
+    def post(self,request,org):
         try:
-            # org_id = request.data.get('organization')
-            # org =  organization_Serializer(Organization.objects.get(id=org_id)).data['id']
-            # request.data['organization'] = org
-            # print(org)
-            # print(request.data['organization'],"----------------------------")
-            # # print(request.data,"lllllllllllllllllllllllll")
-            # print("request", request.data)
-            serializer = DepartmentSerializer(data=request.data)
+
+            print(org)
+            serializer = DepartmentSerializerValidation(data=request.data)
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
@@ -95,8 +92,9 @@ class DepartmentList(APIView):
 
 
 class DepartmentDetails(APIView):
-    def get(self,request,pk):
+    def get(self,request,pk,org):
         try:
+            print(org)
             datas = Department.objects.get(id=pk,is_active = True)
             serilizer = DepartmentSerializer(datas)
             return Response({ "data": serilizer.data}, status=status.HTTP_200_OK)
@@ -104,10 +102,11 @@ class DepartmentDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org):
         try:
+            print(org)
             datas = Department.objects.get(id=pk,is_active = True)
-            serializer = DepartmentSerializer(datas, data=request.data, partial=True)
+            serializer = DepartmentSerializerValidation(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data})
@@ -118,8 +117,9 @@ class DepartmentDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,org):
         try:
+            print(org)
             data = get_object_or_404(Department, id = pk)
             data.is_active = not(data.is_active)
             data.deleted_at =datetime.datetime.now() 
@@ -133,15 +133,15 @@ class DepartmentDetails(APIView):
 
 
 class AgentList(APIView):
-    def get(self,request):
+    def get(self,request,org,dep):
         datas = Agent.objects.filter(is_active = True)
         serializer =AgentSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
+    def post(self,request,org,dep):
         try:
      
-            serializer = AgentSerializer(data=request.data)
+            serializer = AgentSerializerValidation(data=request.data)
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
@@ -154,7 +154,7 @@ class AgentList(APIView):
 
 
 class AgentDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,org,dep):
         try:
             datas = Agent.objects.get(id=pk,is_active = True)
             serilizer = AgentSerializer(datas)
@@ -163,10 +163,10 @@ class AgentDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org,dep):
         try:
             datas = Agent.objects.get(id=pk,is_active = True)
-            serializer = AgentSerializer(datas, data=request.data, partial=True)
+            serializer = AgentSerializerValidation(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data})
@@ -177,7 +177,7 @@ class AgentDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,org,dep):
         try:
             data = get_object_or_404(Agent, id = pk)
             data.is_active = not(data.is_active)
@@ -191,15 +191,18 @@ class AgentDetails(APIView):
 
 class BotList(APIView):
     def get(self,request,org):
-    
-        datas = Bot.objects.filter(is_active = True,organization=org)
+        print(org)
+        datas = Bot.objects.filter(is_active = True)
         serializer =BotSerializer(datas,many=True)
         return Response(serializer.data)  
         
     def post(self,request,org):
         try:
-     
-            serializer = BotSerializer(data=request.data)
+            print(org)
+            serializer = BotSerializerValidation(data=request.data)
+            value = request.data.copy()
+            print(value["organization"])
+            
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
@@ -212,8 +215,9 @@ class BotList(APIView):
 
 
 class BotDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,org):
         try:
+            print(org)
             datas = Bot.objects.get(id=pk,is_active = True)
             serilizer = BotSerializer(datas).data
             
@@ -223,10 +227,11 @@ class BotDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org):
         try:
+            print(org)
             datas = Bot.objects.get(id=pk,is_active = True)
-            serializer = BotSerializer(datas, data=request.data, partial=True)
+            serializer = BotSerializerValidation(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data})
@@ -248,19 +253,23 @@ class BotDetails(APIView):
             print(err)         
 
 class ConversationList(APIView):
-    def get(self,request):
+    def get(self,request,bot):
         datas = Conversations.objects.filter(is_active = True)
         serializer =ConversationSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
-        print(request.data,";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+    def post(self,request,bot):
+        data=request.data
         try:
-     
-            serializer = ConversationSerializer(data=request.data)
+            try:
+                userprofile = UserProfile.objects.get(sender_id=data['sender_id'],bot=bot)
+            except UserProfile.DoesNotExist:
+                userprofile.objects.create(data=data)
+            serializer = ConversationSerializerValidation(data=request.data)
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
+
                 return Response(serializer.data)
             else:
                 return Response(serializer.errors)    
@@ -270,7 +279,7 @@ class ConversationList(APIView):
 
 
 class ConversationDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,bot):
         try:
             datas = Conversations.objects.get(id=pk,is_active = True)
             serilizer = ConversationSerializer(datas)
@@ -279,10 +288,10 @@ class ConversationDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,bot):
         try:
             datas = Conversations.objects.get(id=pk,is_active = True)
-            serializer = ConversationSerializer(datas, data=request.data, partial=True)
+            serializer = ConversationSerializerValidation(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data})
@@ -293,7 +302,7 @@ class ConversationDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,bot):
         try:
             data = get_object_or_404(Conversations, id = pk)
             data.is_active = not(data.is_active)
@@ -305,16 +314,16 @@ class ConversationDetails(APIView):
 
 
 class MessageList(APIView):
-    def get(self,request):
+    def get(self,request,org,conv):
         datas =Message.objects.filter(is_active = True)
         serializer =MessageSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
+    def post(self,request,org,conv):
         print(request.data,";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
         try:
      
-            serializer = MessageSerializer(data=request.data)
+            serializer = MessageSerializerValidation(data=request.data)
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
@@ -327,7 +336,7 @@ class MessageList(APIView):
 
 
 class MessageDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,org,conv):
         try:
             datas = Message.objects.get(id=pk,is_active = True)
             serilizer = MessageSerializer(datas)
@@ -336,10 +345,10 @@ class MessageDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org,conv):
         try:
             datas = Message.objects.get(id=pk,is_active = True)
-            serializer = MessageSerializer(datas, data=request.data, partial=True)
+            serializer = MessageSerializerValidation(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data})
@@ -350,7 +359,7 @@ class MessageDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,org,conv):
         try:
             data = get_object_or_404(Message, id = pk)
             data.is_active = not(data.is_active)
@@ -362,16 +371,16 @@ class MessageDetails(APIView):
 
 
 class UserProfileList(APIView):
-    def get(self,request):
+    def get(self,request,org,bot):
         datas =UserProfile.objects.filter(is_active = True)
         serializer =UserprofileSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
+    def post(self,request,org,bot):
         print(request.data,";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
         try:
      
-            serializer = UserprofileSerializer(data=request.data)
+            serializer = UserprofileSerializerValidation(data=request.data)
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
@@ -386,7 +395,7 @@ class UserProfileList(APIView):
 
 
 class UserProfileDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,org,bot):
         try:
             datas = UserProfile.objects.get(id=pk,is_active = True)
             serilizer = UserprofileSerializer(datas)
@@ -395,7 +404,7 @@ class UserProfileDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org,bot):
         try:
             datas = UserProfile.objects.get(id=pk,is_active = True)
             serializer = UserprofileSerializer(datas, data=request.data, partial=True)
@@ -409,7 +418,7 @@ class UserProfileDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk,bot):
+    def delete(self,request,pk,bot,org):
         try:
             data = get_object_or_404(UserProfile, id = pk)
             data.is_active = not(data.is_active)
@@ -423,16 +432,16 @@ class UserProfileDetails(APIView):
 
 
 class ChannelList(APIView):
-    def get(self,request):
+    def get(self,request,org,bot):
         datas =Channel.objects.filter(is_active = True)
         serializer =ChannelSerializer(datas,many=True)
         return Response(serializer.data)  
         
-    def post(self,request):
+    def post(self,request,org,bot):
         print(request.data,";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
         try:
      
-            serializer = ChannelSerializer(data=request.data)
+            serializer = ChannelSerializerValidation(data=request.data)
             if serializer.is_valid():   
                 serializer.save()
                 print(serializer)
@@ -447,7 +456,7 @@ class ChannelList(APIView):
 #             
 
 class ChannelDetails(APIView):   
-    def get(self,request,pk):
+    def get(self,request,pk,org,bot):
         try:
             datas = Channel.objects.get(id=pk,is_active = True)
             serilizer = ChannelSerializer(datas)
@@ -456,10 +465,10 @@ class ChannelDetails(APIView):
             print(err)
             return Response({"Error":"Error"})  
 
-    def put(self,request,pk):
+    def put(self,request,pk,org,bot):
         try:
             datas = Channel.objects.get(id=pk,is_active = True)
-            serializer = ChannelSerializer(datas, data=request.data, partial=True)
+            serializer = ChannelSerializerValidation(datas, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"status": "success", "data": serializer.data})
@@ -470,7 +479,7 @@ class ChannelDetails(APIView):
             return Response({"Error":"Error"})  
 
 
-    def delete(self,request,pk):
+    def delete(self,request,pk,org,bot):
         try:
             data = get_object_or_404(Channel, id = pk)
             data.is_active = not(data.is_active)
