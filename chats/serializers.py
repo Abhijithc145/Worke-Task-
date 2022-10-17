@@ -23,12 +23,11 @@ class BotSerializer(serializers.ModelSerializer):
         model = Bot
         fields = "__all__"          
 
-
 class BotSerializerValidation(serializers.ModelSerializer):
     
     class Meta:
         model = Bot
-        fields = "__all__"  
+        fields = ["name"]
 
 
 class DepartmentSerializer(serializers.ModelSerializer):

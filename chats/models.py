@@ -88,6 +88,11 @@ class Channel(models.Model):
     def __str__(self):
         return self.name
 
+Options=(
+    ('open', 'open'),
+    ('close', 'open')
+)
+
 
 class Conversations(models.Model):
     id = models.UUIDField(primary_key = True,default = uuid.uuid4,editable = False)
@@ -95,9 +100,9 @@ class Conversations(models.Model):
     Channel = models.CharField(max_length = 100,null = False)
     sender_id = models.PositiveIntegerField(null=True, blank=True)
     sender_name = models.CharField(max_length = 100,null = True)
-    agent = models.CharField(max_length = 100,null = False)
+    agent = models.CharField(max_length = 100)
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
-    status = models.CharField(max_length = 100,null = False)
+    status = models.CharField(max_length=10,choices = Options,default = 'open')
 
     created_at = models.DateTimeField("Created at", auto_now_add=True)
     created_by = models.CharField(max_length = 100,null = True)

@@ -15,22 +15,18 @@ from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelM
 
 
 # organization CRUD
-
 class OrganizationsList(GenericAPIView,ListModelMixin,CreateModelMixin):
     queryset = Organization.objects.filter(is_active = True)
     serializer_class = OrganizationSerializer
     def get(self,request,*args,**kwargs):
-        
         return self.list(request,*args,**kwargs)  
 
     def post(self,request,*args,**kwargs):
-        
         return self.create(request,*args,**kwargs) 
 
 
 class organizationDetails(APIView):
     def get(self,request,pk = None):
-
         if pk:
             try:
                 datas = Organization.objects.get(id=pk,is_active = True)
@@ -38,11 +34,9 @@ class organizationDetails(APIView):
                 return Response({ "data": serializer.data}, status=status.HTTP_200_OK)
             except:
                 return Response({"Error":"The data is no here"})    
- 
         datas = Organization.objects.all()
         serializer = OrganizationSerializer(datas, many=True)
         return Response({"data": serializer.data}, status=status.HTTP_200_OK)  
-
 
     def put(self,request,pk = None):
         try:
@@ -62,6 +56,78 @@ class organizationDetails(APIView):
         data.deleted_at =datetime.datetime.now() 
         data.save()
         return Response({"status": "success", "data": "student Deleted"})                    
+
+
+
+class BotList(APIView):
+    def get(self,request,org):
+        print(org)
+        datas = Bot.objects.filter(is_active = True,)
+        serializer =BotSerializer(datas,many=True)
+        return Response(serializer.data)  
+        
+    def post(self,request,org):
+        try:
+            print(org,"---------------------")
+            print(request.data)
+            post_Data = dict(request.data)
+            print(post_Data)
+            data3 = {
+                    'organization':str(org),
+                    'name': post_Data['name'],
+                  }
+            print(data3)
+            serializer = BotSerializerValidation(data=data3)
+            print(serializers.data)
+            
+            if serializer.is_valid():   
+                serializer.save()
+                print(serializer)
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors)    
+        except Exception as err:
+            print(err)
+            return Response("ERR")              
+
+
+class BotDetails(APIView):   
+    def get(self,request,pk,org):
+        try:
+            print(org)
+            datas = Bot.objects.get(id=pk,is_active = True)
+            serilizer = BotSerializer(datas).data
+            
+            return Response({ "data": serilizer}, status=status.HTTP_200_OK)
+            
+        except Exception as err:
+            print(err)
+            return Response({"Error":"Error"})  
+
+    def put(self,request,pk,org):
+        try:
+            print(org)
+            datas = Bot.objects.get(id=pk,is_active = True)
+            serializer = BotSerializerValidation(datas, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"status": "success", "data": serializer.data})
+            else:
+                return Response({"status": "error", "data": serializer.errors}) 
+        except Exception as err:
+            print(err)
+            return Response({"Error":"Error"})  
+
+
+    def delete(self,request,pk):
+        try:
+            data = get_object_or_404(Bot, id = pk)
+            data.is_active = not(data.is_active)
+            data.deleted_at =datetime.datetime.now() 
+            data.save()
+            return Response({"status": "success", "data": "student Deleted"}) 
+        except Exception as err:
+            print(err)  
 
 
 
@@ -189,72 +255,14 @@ class AgentDetails(APIView):
 
 
 
-class BotList(APIView):
-    def get(self,request,org):
-        print(org)
-        datas = Bot.objects.filter(is_active = True)
-        serializer =BotSerializer(datas,many=True)
-        return Response(serializer.data)  
-        
-    def post(self,request,org):
-        try:
-            print(org)
-            serializer = BotSerializerValidation(data=request.data)
-            value = request.data.copy()
-            print(value["organization"])
-            
-            if serializer.is_valid():   
-                serializer.save()
-                print(serializer)
-                return Response(serializer.data)
-            else:
-                return Response(serializer.errors)    
-        except Exception as err:
-            print(err)
-            return Response("ERR")              
-
-
-class BotDetails(APIView):   
-    def get(self,request,pk,org):
-        try:
-            print(org)
-            datas = Bot.objects.get(id=pk,is_active = True)
-            serilizer = BotSerializer(datas).data
-            
-            return Response({ "data": serilizer}, status=status.HTTP_200_OK)
-            
-        except Exception as err:
-            print(err)
-            return Response({"Error":"Error"})  
-
-    def put(self,request,pk,org):
-        try:
-            print(org)
-            datas = Bot.objects.get(id=pk,is_active = True)
-            serializer = BotSerializerValidation(datas, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({"status": "success", "data": serializer.data})
-            else:
-                return Response({"status": "error", "data": serializer.errors}) 
-        except Exception as err:
-            print(err)
-            return Response({"Error":"Error"})  
-
-
-    def delete(self,request,pk):
-        try:
-            data = get_object_or_404(Bot, id = pk)
-            data.is_active = not(data.is_active)
-            data.deleted_at =datetime.datetime.now() 
-            data.save()
-            return Response({"status": "success", "data": "student Deleted"}) 
-        except Exception as err:
-            print(err)         
 
 class ConversationList(APIView):
     def get(self,request,bot):
-        datas = Conversations.objects.filter(is_active = True)
+        agent = request.GET.get('agent',None)
+        if agent is not None:
+            datas = Conversations.objects.filter(agent=agent)
+        else:
+            datas = Conversations.objects.filter(status='open')
         serializer =ConversationSerializer(datas,many=True)
         return Response(serializer.data)  
         
